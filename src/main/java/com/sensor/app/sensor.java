@@ -27,7 +27,7 @@ public class sensor {
     public static void main (String[]args) throws IOException, ExecutionException, InterruptedException {
         //importFireBase();
         readSensors();
-        
+
     }
     static void importFireBase() throws IOException, ExecutionException, InterruptedException {
         FileInputStream serviceAccount = new FileInputStream("assets\\serviceAccount.json");
