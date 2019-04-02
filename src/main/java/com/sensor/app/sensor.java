@@ -25,7 +25,9 @@ import java.util.concurrent.ExecutionException;
 
 public class sensor {
     public static void main (String[]args) throws IOException, ExecutionException, InterruptedException {
-        importFireBase();
+        //importFireBase();
+        readSensors();
+        
     }
     static void importFireBase() throws IOException, ExecutionException, InterruptedException {
         FileInputStream serviceAccount = new FileInputStream("assets\\serviceAccount.json");
@@ -52,7 +54,7 @@ public class sensor {
         System.out.println("Update time : " + future.get().getUpdateTime());
     }
 
-    void readSensors(){
+    static void readSensors(){
         Components components = JSensors.get.components();
 
         List<Cpu> cpus = components.cpus;
