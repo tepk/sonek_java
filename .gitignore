@@ -1,2 +1,4 @@
 assets/serviceAccount.json
 target/
+out/
+.idea/

@@ -13,19 +13,22 @@ import com.profesorfalken.jsensors.model.components.Disk;
 import com.profesorfalken.jsensors.model.components.Gpu;
 import com.profesorfalken.jsensors.model.sensors.Fan;
 import com.profesorfalken.jsensors.model.sensors.Temperature;
-import com.sun.management.OperatingSystemMXBean;
 
-import javax.management.ObjectName;
 import java.io.FileInputStream;
 
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-public class sensor {
-   static Firestore db;
+public class Main {
     public static void main (String[]args) throws IOException, ExecutionException, InterruptedException {
+        //importFireBase();
+        readSensors();
+    }
+    static void importFireBase() throws IOException, ExecutionException, InterruptedException {
         FileInputStream serviceAccount = new FileInputStream("assets\\serviceAccount.json");
 
         FirebaseOptions options = new FirebaseOptions.Builder()
@@ -35,19 +38,7 @@ public class sensor {
 
         FirebaseApp.initializeApp(options);
 
-       db = FirestoreClient.getFirestore();
-        //importFireBase();
-        readSensors();
-
-        /*OperatingSystemMXBean bean =  (com.sun.management.OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-
-        while (true) {
-            System.out.println(bean.getProcessCpuLoad());
-            System.out.println(bean.getSystemCpuLoad());
-        }*/
-    }
-    static void importFireBase() throws IOException, ExecutionException, InterruptedException {
-
+        Firestore db = FirestoreClient.getFirestore();
 
         // Create a Map to store the data we want to set
         Map<String, Object> docData = new HashMap<>();
@@ -64,24 +55,19 @@ public class sensor {
 
     static void readSensors(){
         Components components = JSensors.get.components();
-        Map<String, Object> result = new HashMap<String, Object>();
+
         List<Cpu> cpus = components.cpus;
 
-
         if (cpus != null) {
-            List<Object> cpusList = new ArrayList<>();
             for (final Cpu cpu : cpus) {
-                Map<String, Object> cpuMap = new HashMap<>();
                 System.out.println("Found CPU component: " + cpu.name);
-
                 if (cpu.sensors != null) {
                     System.out.println("Sensors: ");
-                    Map<String, Object> cpusTempMap = new HashMap<>();
+
                     //Print temperatures
                     List<Temperature> temps = cpu.sensors.temperatures;
                     for (final Temperature temp : temps) {
                         System.out.println(temp.name + ": " + temp.value + " C");
-                        cpusTempMap.put(temp.name, temp.value);
                     }
 
                     //Print fan speed
@@ -89,12 +75,8 @@ public class sensor {
                     for (final Fan fan : fans) {
                         System.out.println(fan.name + ": " + fan.value + " RPM");
                     }
-                    cpuMap.put(cpu.name,cpusTempMap);
-                    cpusList.add(cpuMap);
                 }
-
             }
-            result.put("cpus", cpusList);
         }
         List<Gpu> gpus = components.gpus;
 
@@ -124,7 +106,6 @@ public class sensor {
             for (final Disk disk : disks) {
                 System.out.println("Found DISK component: " + disk.name);
                 if (disk.sensors != null) {
-
                     System.out.println("Sensors: ");
 
                     //Print temperatures
@@ -138,12 +119,9 @@ public class sensor {
                     for (final Fan fan : fans) {
                         System.out.println(fan.name + ": " + fan.value + " RPM");
                     }
-
                 }
             }
         }
-
-        ApiFuture<WriteResult> future = db.collection("cities").document("LA").set(result);
 
     }
 }
