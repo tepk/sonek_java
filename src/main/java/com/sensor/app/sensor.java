@@ -41,7 +41,7 @@ public class sensor {
                 //System.out.println("Task running");
                 readSensors();
             }
-        },1000, 60*1000);
+        },1000, 30*1000);
         //printUsage();
     }
 
